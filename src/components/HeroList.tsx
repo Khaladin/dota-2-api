@@ -30,18 +30,21 @@ const HeroList = () => {
         <Button value="unv">Universal</Button>
       </Stack>
       <Grid container>
-        <ImageList sx={{ width: 500, height: 450 }}>
+        <Grid item xs={12}>
+          <ImageList cols={4} rowHeight={130}>
+            {heroList.map((hero: HeroStats) => {
+              return <ImageListItem sx={{margin: 1}}>
+                <img src={`https://cdn.cloudflare.steamstatic.com/${hero.img}`} srcSet={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}/>
+              </ImageListItem>
+            })}
+          </ImageList>
+        </Grid>
+        <Grid item xs={12}>
+          <Typography>Heroes</Typography>
           {heroList.map((hero: HeroStats) => {
-            return <ImageListItem>
-              <img src={`https://cdn.cloudflare.steamstatic.com/${hero.img}`} srcSet={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}/>
-            </ImageListItem>
+            return <Grid item>{hero.localized_name}</Grid>
           })}
-        </ImageList>
-        <Typography>Heroes</Typography>
-        {console.log(heroList)}
-        {heroList.map((hero: HeroStats) => {
-          return <Grid item>{hero.localized_name}</Grid>
-        })}
+        </Grid>
       </Grid>
     </Box>
   );
