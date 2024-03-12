@@ -1,9 +1,9 @@
 import { useHeroes } from "../hooks/hooks";
 import { Box, Button, Grid, ImageList, ImageListItem, Stack, Typography } from "@mui/material";
-import { MouseEventHandler, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 const HeroList = () => {
-  const [heroType, setHeroType] = useState<string>();
+  const [heroType, setHeroType] = useState<Array<string>>(['agi', 'str', 'int', 'all']);
   const {data} = useHeroes();
 
   type HeroStats = {
@@ -13,21 +13,28 @@ const HeroList = () => {
     icon: any,
   }
 
-  const heroTypes = ['agi', 'str', 'int', 'unv'];
+  const heroTypes = ['agi', 'str', 'int', 'all'];
 
   const handleType = (type: string) => {
-    setHeroType(type)
+    let newTypes = heroType;
+    if (heroType.includes(type)) {
+      newTypes = newTypes.filter((heroType: string) => heroType !== type);
+    } else {
+      newTypes.push(type);
+    }
+    setHeroType(newTypes);
   }
-  const heroList = useMemo(() => data.filter((hero: HeroStats) => hero.primary_attr === heroType),
+
+  const heroList = useMemo(() => data.filter((hero: HeroStats) => (hero.primary_attr)),
     [heroType]);
 
   return (
     <Box>
       <Stack flexDirection="row">
-        <Button onClick={() => handleType("agi")}>Agility</Button>
-        <Button>Strength</Button>
-        <Button value="int">Intelligence</Button>
-        <Button value="unv">Universal</Button>
+        <Button variant='contained' onClick={() => handleType("agi")}>Agility</Button>
+        <Button onClick={() => handleType("str")}>Strength</Button>
+        <Button onClick={() => handleType("int")}>Intelligence</Button>
+        <Button onClick={() => handleType("all")}>Universal</Button>
       </Stack>
       <Grid container>
         <Grid item xs={12}>
