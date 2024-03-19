@@ -1,8 +1,30 @@
 import { useHeroes, useHeroMatchups } from "../hooks/hooks";
-import { Box, Button, Grid, ImageList, ImageListItem, Stack, Typography, ToggleButtonGroup, toggleButtonGroupClasses, ToggleButton } from "@mui/material";
+import { Box, Button, Grid, ImageList, ImageListItem, Stack, Typography, ToggleButtonGroup, toggleButtonGroupClasses, ToggleButton, ButtonBase } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import TouchRipple from "@mui/material/ButtonBase/TouchRipple";
+
+const ImageButton = styled(ButtonBase)(({ theme }) => ({
+  position: 'relative',
+  height: 200,
+  [theme.breakpoints.down('sm')]: {
+    width: '100% !important', // Overrides inline-style
+    height: 100,
+  },
+  '&:hover, &.Mui-focusVisible': {
+    zIndex: 1,
+    '& .MuiImageBackdrop-root': {
+      opacity: 0.15,
+    },
+    '& .MuiImageMarked-root': {
+      opacity: 0,
+    },
+    '& .MuiTypography-root': {
+      border: '4px solid currentColor',
+    },
+  },
+}));
 
 const HeroList = () => {
   const [attributeFilter, setAttributeFilter] = useState(() => ['agi', 'str', 'int', 'all']);
@@ -65,17 +87,31 @@ const HeroList = () => {
           <ImageList cols={3}>
             {heroList.map((hero: HeroStats) => {
               return (
-                <ImageListItem
-                  sx={{
-                    gridTemplateColumns:
-                      'repeat(auto-fill, minmax(200px, 1fr))!important',
-                  }}
-                  onClick={() => handleHeroSelect(hero.id)}
-                >
-                  <motion.div animate={{scale:1}} initial={{scale:0}}>
-                    <img src={`https://cdn.cloudflare.steamstatic.com/${hero.img}`} srcSet={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}/>
-                  </motion.div>
-                </ImageListItem>)
+                  <ImageListItem
+                    sx={{
+                      gridTemplateColumns:
+                        'repeat(auto-fill, minmax(220px, 1fr))!important',
+                    }}
+                    onClick={() => handleHeroSelect(hero.id)}
+                  >
+                    <ImageButton sx={{
+                      borderRadius: 5,
+                      backgroundOpacity: 0.4,
+                      transition: '0.3s',
+                      '&:hover': {
+                        background: "#abc",
+                        backgroundOpacity: 0.8,
+                      }
+                    }}>
+                      <motion.div animate={{scale:1}} initial={{scale:0}}>
+                        <img
+                          src={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}
+                          srcSet={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}
+                        />
+                      </motion.div>
+                    </ImageButton>
+                  </ImageListItem>
+                )
             })}
           </ImageList>
         </Grid>
