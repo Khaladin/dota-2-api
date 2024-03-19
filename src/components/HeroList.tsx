@@ -4,24 +4,6 @@ import { styled } from '@mui/material/styles';
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 
-const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  [`& .${toggleButtonGroupClasses.grouped}`]: {
-    margin: theme.spacing(0.5),
-    color: 'red',
-    background: 'white',
-    border: 0,
-    borderRadius: theme.shape.borderRadius,
-    [`&.${toggleButtonGroupClasses.disabled}`]: {
-      border: 0,
-    },
-  },
-  [`& .${toggleButtonGroupClasses.middleButton},& .${toggleButtonGroupClasses.lastButton}`]:
-    {
-      marginLeft: -1,
-      borderLeft: '1px solid transparent',
-    },
-}));
-
 const HeroList = () => {
   const [attributeFilter, setAttributeFilter] = useState(() => ['agi', 'str', 'int', 'all']);
   const [selectedHero, setSelectedHero] = useState<number>(0);
@@ -49,9 +31,14 @@ const HeroList = () => {
     setAttributeFilter(newFormats);
   };
 
+  function handleHeroSelect(id: number) {
+    setSelectedHero(id);
+    refetch();
+  }
+
   return (
     <Box>
-      <Stack flexDirection="row">
+      <Stack flexDirection="row" sx={{justifyContent: "center"}} mt={4}>
         <ToggleButtonGroup
           color={'primary'}
           value={attributeFilter}
@@ -73,24 +60,24 @@ const HeroList = () => {
           <ToggleButton value={'all'} aria-label="universal">Universal</ToggleButton>
         </ToggleButtonGroup>
       </Stack>
-      <Grid container>
+      <Grid container mt={2}>
         <Grid item xs={12}>
-          <ImageList cols={4} rowHeight={130}>
+          <ImageList cols={3}>
             {heroList.map((hero: HeroStats) => {
               return (
-                <ImageListItem sx={{margin: 1}} onClick={() => {setSelectedHero(hero.id); refetch()}}>
+                <ImageListItem
+                  sx={{
+                    gridTemplateColumns:
+                      'repeat(auto-fill, minmax(200px, 1fr))!important',
+                  }}
+                  onClick={() => handleHeroSelect(hero.id)}
+                >
                   <motion.div animate={{scale:1}} initial={{scale:0}}>
                     <img src={`https://cdn.cloudflare.steamstatic.com/${hero.img}`} srcSet={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}/>
                   </motion.div>
                 </ImageListItem>)
             })}
           </ImageList>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>Heroes</Typography>
-          {heroList.map((hero: HeroStats) => {
-            return <Grid item>{hero.localized_name}</Grid>
-          })}
         </Grid>
       </Grid>
     </Box>
