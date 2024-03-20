@@ -1,25 +1,29 @@
 import { useHeroes, useHeroMatchups } from "../hooks/hooks";
-import { Box, Button, Grid, ImageList, ImageListItem, Stack, Typography, ToggleButtonGroup, toggleButtonGroupClasses, ToggleButton } from "@mui/material";
+import { Box, Button, Grid, ImageList, ImageListItem, Stack, Typography, ToggleButtonGroup, toggleButtonGroupClasses, ToggleButton, ButtonBase } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import TouchRipple from "@mui/material/ButtonBase/TouchRipple";
 
-const StyledToggleButtonGroup = styled(ToggleButtonGroup)(({ theme }) => ({
-  [`& .${toggleButtonGroupClasses.grouped}`]: {
-    margin: theme.spacing(0.5),
-    color: 'red',
-    background: 'white',
-    border: 0,
-    borderRadius: theme.shape.borderRadius,
-    [`&.${toggleButtonGroupClasses.disabled}`]: {
-      border: 0,
+const ImageButton = styled(ButtonBase)(({ theme }) => ({
+  position: 'relative',
+  height: 200,
+  [theme.breakpoints.down('sm')]: {
+    width: '100% !important', // Overrides inline-style
+    height: 100,
+  },
+  '&:hover, &.Mui-focusVisible': {
+    zIndex: 1,
+    '& .MuiImageBackdrop-root': {
+      opacity: 0.15,
+    },
+    '& .MuiImageMarked-root': {
+      opacity: 0,
+    },
+    '& .MuiTypography-root': {
+      border: '4px solid currentColor',
     },
   },
-  [`& .${toggleButtonGroupClasses.middleButton},& .${toggleButtonGroupClasses.lastButton}`]:
-    {
-      marginLeft: -1,
-      borderLeft: '1px solid transparent',
-    },
 }));
 
 const HeroList = () => {
@@ -49,9 +53,14 @@ const HeroList = () => {
     setAttributeFilter(newFormats);
   };
 
+  function handleHeroSelect(id: number) {
+    setSelectedHero(id);
+    refetch();
+  }
+
   return (
     <Box>
-      <Stack flexDirection="row">
+      <Stack flexDirection="row" sx={{justifyContent: "center"}} mt={4}>
         <ToggleButtonGroup
           color={'primary'}
           value={attributeFilter}
@@ -73,24 +82,38 @@ const HeroList = () => {
           <ToggleButton value={'all'} aria-label="universal">Universal</ToggleButton>
         </ToggleButtonGroup>
       </Stack>
-      <Grid container>
+      <Grid container mt={2}>
         <Grid item xs={12}>
-          <ImageList cols={4} rowHeight={130}>
+          <ImageList cols={3}>
             {heroList.map((hero: HeroStats) => {
               return (
-                <ImageListItem sx={{margin: 1}} onClick={() => {setSelectedHero(hero.id); refetch()}}>
-                  <motion.div animate={{scale:1}} initial={{scale:0}}>
-                    <img src={`https://cdn.cloudflare.steamstatic.com/${hero.img}`} srcSet={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}/>
-                  </motion.div>
-                </ImageListItem>)
+                  <ImageListItem
+                    sx={{
+                      gridTemplateColumns:
+                        'repeat(auto-fill, minmax(220px, 1fr))!important',
+                    }}
+                    onClick={() => handleHeroSelect(hero.id)}
+                  >
+                    <ImageButton sx={{
+                      borderRadius: 5,
+                      backgroundOpacity: 0.4,
+                      transition: '0.3s',
+                      '&:hover': {
+                        background: "#abc",
+                        backgroundOpacity: 0.8,
+                      }
+                    }}>
+                      <motion.div animate={{scale:1}} initial={{scale:0}}>
+                        <img
+                          src={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}
+                          srcSet={`https://cdn.cloudflare.steamstatic.com/${hero.img}`}
+                        />
+                      </motion.div>
+                    </ImageButton>
+                  </ImageListItem>
+                )
             })}
           </ImageList>
-        </Grid>
-        <Grid item xs={12}>
-          <Typography>Heroes</Typography>
-          {heroList.map((hero: HeroStats) => {
-            return <Grid item>{hero.localized_name}</Grid>
-          })}
         </Grid>
       </Grid>
     </Box>
